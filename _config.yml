@@ -1,0 +1,9 @@
+title: 面试知识库
+description: 昇腾算子工程师 → 推理系统优化专家：硬件架构 / MSD模板 / AIV编程模型 / vLLM推理系统 / 备战策略
+theme: jekyll-theme-cayman
+markdown: GFM
+plugins:
+  - jekyll-relative-links
+relative_links:
+  enabled: true
+  collections: false
