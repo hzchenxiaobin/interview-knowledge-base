@@ -45,6 +45,13 @@
 - 实际开销被 L2 命中（写读紧邻）和 N 向分块流水（WaitForCube 双缓冲）摊薄
 - FixPipe 随路合并（L0C→UB 时直接做 C1/C2 合成）可再省 Vector 30-50%
 
+## 5.5 Attention 场景的收益与边界
+
+- **KV cache 读取 5Md → 2Md（2.5×）**：decode attention 中 K/V 的反量化同样可走 MSD 路线（d 为 head dim）
+- **拐点 N\***：上下文长度超过 N* 才划算（双倍 GEMM 的开销需要足够长的 KV 读取来摊销）——**d=128 时 N\*≈20，d=576（MLA）时 N\*≈31**；低于拐点收益为负
+- **仅 decode 小 batch 适用**；prefill 的 attention/GEMM 是 compute-bound，MSD 无收益甚至负收益
+- 实测口径：GQA decode 带宽利用率 40-50% → **80%+**，隐含端到端 ~1.6-2×
+
 ## 6. MSD 模板工程约束（tiling 代码核实）
 
 - `MSD_M_LIMIT = 64`（仅 decode 小 m，prefill 不推荐）
